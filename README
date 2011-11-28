@@ -9,6 +9,7 @@ Proposed setup is (in terminal):
 3. ln /usr/local/mssh/mssh.tcl /usr/local/bin/mssh
 
 or if manually downloaded swap step 1 with this:
+mkdir /usr/local/mssh
 mv /from/file/location/mssh.tcl /usr/local/mssh/mssh.tcl
 
 and then the script can be launched from terminal with mssh.
