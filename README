@@ -3,10 +3,13 @@ In the file, you specify: nickname user server password
 and then using expect we connect to the server, after connection, 
 the control is given back to the user (using interact).
 
-Proposed setup is:
+Proposed setup is (in terminal):
+1. git clone git@github.com:chrules/MySSH.git /usr/local/mssh
+2. chmod 755 /usr/local/mssh/mssh.tcl
+3. ln /usr/local/mssh/mssh.tcl /usr/local/bin/mssh
+
+or if manually downloaded swap step 1 with this:
 mv /from/file/location/mssh.tcl /usr/local/mssh/mssh.tcl
-chmod 755 /usr/local/mssh/mssh.tcl
-ln /usr/local/mssh/mssh.tcl /usr/local/bin/mssh
 
 and then the script can be launched from terminal with mssh.
 
