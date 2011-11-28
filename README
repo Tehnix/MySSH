@@ -12,6 +12,8 @@ and then the script can be launched from terminal with mssh.
 
 Usage:
 mssh nickname		# <-- launch ssh client for server associated with nickname
+mssh names		# <-- echo's list of servers and corresponding call names
+mssh help		# <-- currently, same as mssh names
 mssh edit		# <-- open mssh file for edit through vi
 
 Notice that mssh edit expects the target location to be /usr/local/mssh/mssh.tcl.
