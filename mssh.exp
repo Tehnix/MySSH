@@ -1,0 +1,51 @@
+#!/usr/bin/expect
+
+# Get arguments
+set arg1 [lindex $argv 0]
+
+# Our pretty ascii vars :D
+set conf_loggedin "
+,----------------------------------------------------------------------------,
+|                           You are now logged in !                          |
+`----------------------------------------------------------------------------´
+"
+
+# Set server vars: {callname username password server port} from conList.db
+set fp [open "conList.db" r]
+set data [read $fp]
+
+# Split the file into {c u s p} list
+set conList [split $data " "]
+
+foreach {n u p s d} $conList {
+    if {"$arg1" == $n} {
+        spawn ssh -p $d $u\@$s
+        expect "password:" { send -- "$p\r" }
+        send_user -- "$conf_loggedin"
+        interact
+    }
+}
+
+if {"$arg1" == "names" | "$arg1" == "help"} {
+    send_user -- "
+,----------------------------------------------------------------------------,
+| Names                  Servers                                             |
+`----------------------------------------------------------------------------´
+"
+    foreach {n u p s d} $conlist {
+        send_user -- "| $n           $u\@$s:$d                                  
+`----------------------------------------------------------------------------´
+"
+    }
+}
+
+if {"$arg1" == "edit"} {
+    send_user -- "
+,----------------------------------------------------------------------------,
+|                            Editing mssh file                               |
+`----------------------------------------------------------------------------´
+"
+    spawn bash 
+    send "vi /usr/local/my_custom_scripts/mssh.tcl\r"
+    interact
+}
