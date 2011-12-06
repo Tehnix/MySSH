@@ -1,16 +1,24 @@
 MySSH (mssh) is used as an easy way to connect to ssh servers.
-In the file, you specify: nickname user server password
+In a file named "conList.db", we specify: callname username password server port
 and then using expect we connect to the server, after connection, 
 the control is given back to the user (using interact).
 
 Proposed setup is (in terminal):
 1. git clone git@github.com:chrules/MySSH.git /usr/local/mssh
-2. chmod 755 /usr/local/mssh/mssh.tcl
-3. ln /usr/local/mssh/mssh.tcl /usr/local/bin/mssh
+2. chmod 755 /usr/local/mssh/mssh.exp
+3. ln /usr/local/mssh/mssh.exp /usr/local/bin/mssh
+4. vi /usr/local/mssh/conList.db
+5. Enter the callname username password server port 
+and in that order.
+	ex: Google googl 1ofm493 192.168.253.2 22
+	Meaning you access it by: mssh Google
 
-or if manually downloaded swap step 1 with this:
+Variables in conList.db is seperated by spaces! Also, it must be in the same
+directory as the mssh.exp file.
+
+If you manually downloaded swap step 1 with this:
 mkdir /usr/local/mssh
-mv /from/file/location/mssh.tcl /usr/local/mssh/mssh.tcl
+mv /from/file/location/mssh.exp /usr/local/mssh/mssh.exp
 
 and then the script can be launched from terminal with mssh.
 
@@ -20,5 +28,5 @@ mssh names		# <-- echo's list of servers and corresponding call names
 mssh help		# <-- currently, same as mssh names
 mssh edit		# <-- open mssh file for edit through vi
 
-Notice that mssh edit expects the target location to be /usr/local/mssh/mssh.tcl.
+Notice that mssh edit expects the target location to be /usr/local/mssh/mssh.exp.
 This can easily be changed though in the file.
