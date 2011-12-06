@@ -1,6 +1,6 @@
 #!/usr/bin/expect
 
-# Get arguments
+# Get arguments from command line
 set arg1 [lindex $argv 0]
 
 # Our pretty ascii vars :D
@@ -13,12 +13,13 @@ set conf_loggedin "
 # Set server vars: {callname username password server port} from conList.db
 set fp [open "conList.db" r]
 set data [read $fp]
+close $fp
 
 # Split the file into {c u s p} list
 set conList [split $data "\n"]
 
 
-foreach {con} $conList {
+foreach con $conList {
     foreach {n u p s d} [split $con " "] {
         if {"$arg1" == $n} {
             spawn ssh -p $d $u\@$s
