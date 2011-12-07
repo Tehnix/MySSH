@@ -24,7 +24,7 @@ set table_bottom "
 "
 
 # Set server vars: {callname username password server port} from conList.db
-set fp [open conList.db r]
+set fp [open /usr/local/mssh/conList.db r]
 set data [read $fp]
 
 set conList [split $data "\n"]
