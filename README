@@ -6,15 +6,16 @@ the control is given back to the user (using interact).
 Proposed setup is (in terminal):
 1. git clone git@github.com:chrules/MySSH.git /usr/local/mssh
 2. chmod 755 /usr/local/mssh/mssh.exp
-3. ln /usr/local/mssh/mssh.exp /usr/local/bin/mssh
+3. ln -s /usr/local/mssh/mssh.exp /usr/local/bin/mssh
 4. vi /usr/local/mssh/conList.db
 5. Enter the callname username password server port 
 and in that order.
-	ex: Google googl 1ofm493 192.168.253.2 22
+	ex: Google googl 1ofm493 192.168.253.2 22 
 	Meaning you access it by: mssh Google
 
 Variables in conList.db is seperated by spaces! Also, it must be in the same
 directory as the mssh.exp file.
+! IMPORTANT ! Lines must end with a space
 
 If you manually downloaded swap step 1 with this:
 mkdir /usr/local/mssh
