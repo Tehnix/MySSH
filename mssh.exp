@@ -24,7 +24,7 @@ set table_bottom "
 "
 
 # Set server vars: {callname username password server port} from conList.db
-set fp [open "conList.db" r]
+set fp [open conList.db r]
 set data [read $fp]
 
 set conList [split $data "\n"]
@@ -50,12 +50,9 @@ if {"$arg1" == "names" | "$arg1" == "help"} {
             set temp_con {}
             lappend temp_con $n $u $p $s $d
             lappend table_list $temp_con
-            # temp fix for table print
             send_user -- "| $n           $u\@$s:$d $table_bottom"
         }
     }
-    #send_user -- "$table_header"
-    #send_user -- $table_list
 }
 close $fp
 
