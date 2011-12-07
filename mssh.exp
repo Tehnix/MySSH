@@ -1,27 +1,29 @@
-#!/usr/bin/expect
+#!/usr/bin/expect -f
 
 # Get arguments from command line
 set arg1 [lindex $argv 0]
 
 # Our pretty ascii vars :D
 set conf_loggedin "
-,----------------------------------------------------------------------------,
++----------------------------------------------------------------------------+
 |                           You are now logged in !                          |
-`----------------------------------------------------------------------------´
++----------------------------------------------------------------------------+
 "
 set edit_file "
-,----------------------------------------------------------------------------,
++----------------------------------------------------------------------------+
 |                            Editing mssh file                               |
-`----------------------------------------------------------------------------´
++----------------------------------------------------------------------------+
 "
 set table_header "
-,----------------------------------------------------------------------------,
-| Names                  Servers                                             |
-`----------------------------------------------------------------------------´
++----------------------------------------------------------------------------+
+| Callname              |   Server                                           |
++----------------------------------------------------------------------------+
 "
 set table_bottom "
-`----------------------------------------------------------------------------´
++----------------------------------------------------------------------------+
 "
+
+set fname "/usr/local/mssh/conList"
 
 if {"$arg1" == "edit"} {
     # TODO - auto exit when out of Vi
@@ -30,44 +32,56 @@ if {"$arg1" == "edit"} {
     send "vi /usr/local/mssh/mssh.exp\r"
     interact
 
-} else {
-    # Set server vars: {callname username password server port} from conList.db
-    set fname "/usr/local/mssh/conList.db"
+} elseif {[file exist $fname] == 1 && [file isfile $fname] == 1} {
+    # Read our connection list file
+    set fp [open $fname]
+    set content [read $fp]
 
-    # Check if the file exists
-    if {file exists $fname == 1 && file isfile == 1} {
-        set fp [open $fname r]
-        set data [read $fp]
+    set conList [split $content "\n"]
+    close $fp
 
-        set conList [split $data "\n"]
-        close $fp
-    } then {
-        if {"$arg1" == "names" || "$arg1" == "help"} {
-            # TODO - make table pretty-print
-            set table_list {}
-            send_user -- "$table_header"
-            foreach con $conList {
-                foreach {n u p s d} [split $con " "] {
-                    set temp_con {}
-                    lappend temp_con $n $u $p $s $d
-                    lappend table_list $temp_con
-                    send_user -- "| $n           $u\@$s:$d $table_bottom"
-                }
+    if {"$arg1" == "names" || "$arg1" == "help"} {
+        # Print the table header
+        send_user -- "$table_header"
+        foreach con $conList {
+            set fields [split $con ":"]
+            lassign $fields call user pass server port
+            if {$port == ""} {
+                set port 22
             }
-        } else {
-            # Make connection
-            foreach con $conList {
-                foreach {n u p s d} [split $con " "] {
-                    if {"$arg1" == $n} {
-                        spawn ssh -p $d $u\@$s
-                        expect "password:" { send -- "$p\r" }
-                        send_user -- "$conf_loggedin"
-                        interact
-                    }
-                }
-            }
+
+            # Calculate spaces between call and user@server
+            set spaces1 [expr 20 - [string length $call]]
+            set spaces1 [string repeat " " $spaces1]
+            # Calculate spaces from server to end
+            set spaces2 [expr 47 - [string length $server] - \
+                        [string length $user] - [string length $port] - 1]
+            set spaces2 [string repeat " " $spaces2]
+
+
+            # Print our table rows
+            send_user -- "| $call $spaces1 |   $user\@$server:$port $spaces2|\
+            $table_bottom"
         }
     } else {
-        send_user -- "Please create 'conList.db' in /usr/local/mssh !"
+        # Make connection
+        foreach con $conList {
+            set fields [split $con ":"]
+            lassign $fields call user pass server port
+            if {$port == ""} {
+                set port 22
+            }
+            if {"$arg1" == $call} {
+                spawn ssh -p $port $user\@$server
+                expect "password:" { send -- "$pass\r" }
+                send_user -- "$conf_loggedin"
+                interact
+            }
+        }
     }
+} else {
+    send_user -- "Please create 'conList' in /usr/local/mssh !\n"
+    send_user -- "Use the following format:\n"
+    send_user -- "callname1:username1:password1:server1:port1\n"
+    send_user -- "callname2:username2:password2:server2:port2\n"
 }
