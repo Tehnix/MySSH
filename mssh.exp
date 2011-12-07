@@ -9,13 +9,25 @@ set conf_loggedin "
 |                           You are now logged in !                          |
 `----------------------------------------------------------------------------´
 "
+set edit_file "
+,----------------------------------------------------------------------------,
+|                            Editing mssh file                               |
+`----------------------------------------------------------------------------´
+"
+set table_header "
+,----------------------------------------------------------------------------,
+| Names                  Servers                                             |
+`----------------------------------------------------------------------------´
+"
+set table_bottom "
+`----------------------------------------------------------------------------´
+"
 
 # Set server vars: {callname username password server port} from conList.db
 set fp [open "conList.db" r]
 set data [read $fp]
 close $fp
 
-# Split the file into {c u s p} list
 set conList [split $data "\n"]
 
 
@@ -31,24 +43,24 @@ foreach con $conList {
 }
 
 if {"$arg1" == "names" | "$arg1" == "help"} {
-    send_user -- "
-,----------------------------------------------------------------------------,
-| Names                  Servers                                             |
-`----------------------------------------------------------------------------´
-"
-    foreach {n u p s d} $conList {
-        send_user -- "| $n           $u\@$s:$d                                  
-`----------------------------------------------------------------------------´
-"
+    # TODO - make table pretty-print
+    set table_list {}
+    send_user -- "$table_header"
+    foreach con $conList {
+        foreach {n u p s d} [split $con " "] {
+            set temp_con {}
+            lappend temp_con $n $u $p $s $d
+            lappend table_list $temp_con
+            # temp fix for table print
+            send_user -- "| $n           $u\@$s:$d $table_bottom"
+        }
     }
+    #send_user -- "$table_header"
+    #send_user -- $table_list
 }
 
 if {"$arg1" == "edit"} {
-    send_user -- "
-,----------------------------------------------------------------------------,
-|                            Editing mssh file                               |
-`----------------------------------------------------------------------------´
-"
+    send_user -- "$edit_file"
     spawn bash 
     send "vi /usr/local/mssh/mssh.exp\r"
     interact
