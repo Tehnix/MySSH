@@ -36,7 +36,7 @@ if {"$arg1" == "names" | "$arg1" == "help"} {
 | Names                  Servers                                             |
 `----------------------------------------------------------------------------´
 "
-    foreach {n u p s d} $conlist {
+    foreach {n u p s d} $conList {
         send_user -- "| $n           $u\@$s:$d                                  
 `----------------------------------------------------------------------------´
 "
@@ -50,6 +50,6 @@ if {"$arg1" == "edit"} {
 `----------------------------------------------------------------------------´
 "
     spawn bash 
-    send "vi /usr/local/my_custom_scripts/mssh.tcl\r"
+    send "vi /usr/local/mssh/mssh.exp\r"
     interact
 }
