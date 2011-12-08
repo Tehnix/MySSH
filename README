@@ -1,33 +1,42 @@
+0x00        Introduction
 MySSH (mssh) is used as an easy way to connect to ssh servers.
-In a file named "conList.db", we specify: callname username password server port
+In a file named "conList", we specify: callname:username:password:server:port
 and then using expect we connect to the server, after connection, 
-the control is given back to the user (using interact).
+the control is given back to the user (the expect interact command).
 
+1x00        Setup
 Proposed setup is (in terminal):
-1. git clone git@github.com:chrules/MySSH.git /usr/local/mssh
-2. chmod 755 /usr/local/mssh/mssh.exp
-3. ln -s /usr/local/mssh/mssh.exp /usr/local/bin/mssh
-4. vi /usr/local/mssh/conList.db
-5. Enter the callname username password server port 
-and in that order.
-	ex: Google googl 1ofm493 192.168.253.2 22 
-	Meaning you access it by: mssh Google
+    1. git clone git@github.com:chrules/MySSH.git /usr/local/mssh
+    2. chmod 755 /usr/local/mssh/mssh.exp
+    3. ln -s /usr/local/mssh/mssh.exp /usr/local/bin/mssh
+    4. vi /usr/local/mssh/conList
+    5. press "i" to edit in Vi
+    6. Enter the callname:username:password:server:port (see 1x02 if in doubt)
+    7. type ":wq" to save and exit the file
+The script can now be launched from terminal with mssh.
 
-Variables in conList.db is seperated by spaces! Also, it must be in the same
-directory as the mssh.exp file.
-! IMPORTANT ! Lines must end with a space
+1x01        NOTE
+If you manually downloaded the file, swap step 1 with this:
+1.1 mkdir /usr/local/mssh
+1.2 mv /from/file/location/mssh.exp /usr/local/mssh/mssh.exp
+Where "/from/file/location/mssh.exp" is where you saved the mssh.exp file
 
-If you manually downloaded swap step 1 with this:
-mkdir /usr/local/mssh
-mv /from/file/location/mssh.exp /usr/local/mssh/mssh.exp
+1x02        Formatting of conList file
 
-and then the script can be launched from terminal with mssh.
+callname1:username1:password1:server1:port1
+callname2:username2:password2:server2
+callname3:username3:password3:server3:port3
 
+Each field is seperated by ":" and each line is seperated by "\n".
+If port is omitted, a standard of port 22 will be used
+
+2x00        Usage
 Usage:
-mssh nickname		# <-- launch ssh client for server associated with nickname
+mssh callname   # <-- launch ssh client for server associated with nickname
 mssh names		# <-- echo's list of servers and corresponding call names
 mssh help		# <-- currently, same as mssh names
 mssh edit		# <-- open mssh file for edit through vi
 
-Notice that mssh edit expects the target location to be /usr/local/mssh/mssh.exp.
+Notice that mssh edit expects the target location to be /usr/local/mssh/mssh.exp,
+and opens in vi editor (most *NIX environments have this).
 This can easily be changed though in the file.
