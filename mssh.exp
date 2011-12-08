@@ -63,10 +63,11 @@ if {"$arg1" == "edit"} {
             send_user -- "| $call $spaces1 |   $user\@$server:$port $spaces2|\
             $table_bottom"
         }
+
     } elseif {"$arg1" == "help"} {
         set freadme "/usr/local/mssh/README"
-        if {[file exist $freadme] == 1 && [file isfile $freadme] == 1}
-        {
+
+        if {[file exist $freadme] == 1 && [file isfile $freadme] == 1} {
             # Read our README file
             set fpp [open $freadme]
             set content [read $fpp]
@@ -77,6 +78,7 @@ if {"$arg1" == "edit"} {
         } else {
             send_user -- "Sorry, but the README file is missing!\n"
         }
+
     } else {
         # Make connection
         foreach con $conList {
@@ -92,10 +94,13 @@ if {"$arg1" == "edit"} {
                 interact
             }
         }
+
     }
+
 } else {
     send_user -- "Please create 'conList' in /usr/local/mssh !\n"
     send_user -- "Use the following format:\n"
     send_user -- "callname1:username1:password1:server1:port1\n"
     send_user -- "callname2:username2:password2:server2:port2\n"
+
 }
