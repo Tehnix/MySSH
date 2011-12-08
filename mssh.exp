@@ -106,6 +106,7 @@ if {"$arg1" == "edit"} {
             close $fpp
         } else {
             send_user -- "Sorry, but the README file is missing!\n"
+            send_user -- "Basic instructions is: mssh <callname>"
         }
 
     } else {
