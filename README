@@ -16,7 +16,7 @@
 |        MySSH (mssh) - An automated ssh login script in Expect (Tcl)        |
 +----------------------------------------------------------------------------+
 +----------------------------------------------------------------------------+
-| 0x00 :                            Author                                   |
+| 0x00 :                Author                                               |
 +----------------------------------------------------------------------------+
 Christian Kjær Laustsen (chrules) from Zeal                                   
 +----------------------------------------------------------------------------+
@@ -28,7 +28,7 @@ and then using expect we connect to the server, after connection,
 the control is given back to the user (the expect interact command).          
                                                                               
 +----------------------------------------------------------------------------+
-| 1x00 :                            Setup                                    |
+| 1x00 :                Setup                                                |
 +----------------------------------------------------------------------------+
 Proposed setup is (in terminal):                                              
     1. git clone git@github.com:chrules/MySSH.git /usr/local/mssh             
@@ -41,7 +41,7 @@ Proposed setup is (in terminal):
 The script can now be launched from terminal with mssh.                       
                                                                               
 +----------------------------------------------------------------------------+
-| 1x01 :                            NOTE                                     |
+| 1x01 :                NOTE                                                 |
 +----------------------------------------------------------------------------+
 If you manually downloaded the file, swap step 1 with this:                   
 1.1 mkdir /usr/local/mssh                                                     
@@ -49,7 +49,7 @@ If you manually downloaded the file, swap step 1 with this:
 Where "/from/file/location/mssh.exp" is where you saved the mssh.exp file     
                                                                               
 +----------------------------------------------------------------------------+
-| 1x02 :                            Formatting of conList file               |
+| 1x02 :                Formatting of conList file                           |
 +----------------------------------------------------------------------------+
                                                                               
 callname1:username1:password1:server1:port1                                   
@@ -60,7 +60,7 @@ Each field is seperated by ":" and each line is seperated by "\n".
 If port is omitted, a standard of port 22 will be used.                       
                                                                               
 +----------------------------------------------------------------------------+
-| 2x00 :                            Usage                                    |
+| 2x00 :                Usage                                                |
 +----------------------------------------------------------------------------+
 Usage: mssh [options]                                                         
 Options:                                                                      
