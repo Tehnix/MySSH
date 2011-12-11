@@ -261,7 +261,7 @@ if {$arg1 == "help" || $help || $helps || $arg1 == "" && $connect == "" &&
             send_user -- "Could not locate file '$use'\n"
         } else {
             set fp [open $fname w]
-            puts $fp " "
+            puts -nonewline $fp ""
             close $fp
             send_user -- "File 'conList' has been created in /usr/local/mssh !\n"
             send_user -- "Please fill it with your connection informartion "
