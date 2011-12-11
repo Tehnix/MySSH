@@ -1,4 +1,4 @@
-#!/usr/bin/expect -c
+#!/usr/bin/expect
 
 # Copyright &copy; 2009-2011, Christian Kjaer Laustsen (chrules)
 # All rights reserved.
