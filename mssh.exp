@@ -28,11 +28,12 @@
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE  
 # POSSIBILITY OF SUCH DAMAGE.
 
-
-# Get arguments from command line
-set arg1 [lindex $argv 0]
-
 # Our pretty ascii vars :D
+set welcome_art "
++----------------------------------------------------------------------------+
+|        MySSH (mssh) - An automated ssh login script in Expect (Tcl)        |
++----------------------------------------------------------------------------+
+"
 set conf_loggedin "
 +----------------------------------------------------------------------------+
 |                           You are now logged in !                          |
@@ -44,93 +45,233 @@ set edit_file "
 +----------------------------------------------------------------------------+
 "
 set table_header "
-+----------------------------------------------------------------------------+
-| Callname              |   Server                                           |
-+----------------------------------------------------------------------------+
+    +------------------------------------------------------------------------+
+    | Callname                |   Server                                     |
+    +------------------------------------------------------------------------+
 "
 set table_bottom "
-+----------------------------------------------------------------------------+
+    +------------------------------------------------------------------------+
 "
 
-set fname "/usr/local/mssh/conList"
+# Get flag arguments and such
+proc getopt {_argv name {_var ""} {default ""}} {
+    upvar 1 $_argv argv $_var var
+    set pos [lsearch -regexp $argv ^$name]
+    if {$pos>=0} {
+        set to $pos
+        if {$_var ne ""} {
+            set var [lindex $argv [incr to]]
+        }
+        set argv [lreplace $argv $pos $to]
+        return 1
+    } else {
+        if {[llength [info level 0]] == 5} {set var $default}
+        return 0
+    }
+ }
+proc fmtable {callname username server port {target ""}} {
+    upvar table_bottom table_bottom
+    # Calculate spaces between call and user@server
+    set spaces1 [expr 22 - [string length $callname]]
+    set spaces1 [string repeat " " $spaces1]
+    # Calculate spaces from server to end
+    set spaces2 [expr 40 - [string length $server] - \
+                [string length $username] - [string length $port] - 1]
+    set spaces2 [string repeat " " $spaces2]
 
-if {"$arg1" == "edit"} {
+
+    # Print our table rows
+    if {$target == $callname} {
+        return "--->| $callname $spaces1 |   $username\@$server:$port \
+    $spaces2|\
+    $table_bottom"
+    } else {
+        return "    | $callname $spaces1 |   $username\@$server:$port \
+    $spaces2|\
+    $table_bottom"
+    }
+}
+
+# Get arguments from command line
+set _connect [getopt argv -c connect 0]
+set _set [getopt argv -s set 0]
+set _del [getopt argv -d del 0]
+set _use [getopt argv -u use 0]
+set get [getopt argv -g]
+set help [getopt argv -h]
+set helps [getopt argv --help]
+
+set arg1 [lindex $argv 0]
+
+
+if {$arg1 == "help" || $help || $helps || $arg1 == "" && $connect == "" && 
+    $set == "" && $del == "" && $use == "" && $get == 0} {
+    send_user -- "$welcome_art"
+    send_user -- "usage: mssh \[--version\] \[--path\] \[--del=callname\]\n"
+    send_user -- "            \[--conn=callname\]\[--set\] \[--use=FILE\]\n"
+    send_user -- "            <command> \[<args>\]\n"
+    send_user -- "\n"
+    send_user -- "The most commonly used mssh commands are:\n"
+    send_user -- "   help       Display this list of helpful content\n"
+    send_user -- "   doc        Show documentation info (from README)\n"
+    send_user -- "   names      Show a list of registered connections\n"
+    send_user -- "\n"
+    send_user -- "   -c <callname>\n"
+    send_user -- "              Connect to server identified by <callname>\n"
+    send_user -- "   -s <callname> <username> <password> <server> <port>\n"
+    send_user -- "              Set a connection with specified args\n"
+    send_user -- "   -d <callname>\n"
+    send_user -- "              Delete the connection with <callname>\n"
+    send_user -- "   -u <filepath>\n"
+    send_user -- "              Use specified file instead of default conList\n"
+    send_user -- "   -g         Same as names, prints a list of connections\n"
+    send_user -- "\n"
+} elseif {"$arg1" == "edit"} {
     # TODO - auto exit when out of Vi
     send_user -- "$edit_file"
     spawn bash 
     send "vi /usr/local/mssh/mssh.exp\r"
     interact
 
-} elseif {[file exist $fname] == 1 && [file isfile $fname] == 1} {
-    # Read our connection list file
-    set fp [open $fname]
-    set content [read $fp]
+} elseif {"$arg1" == "doc"} {
+    set freadme "/usr/local/mssh/README"
+    # Check if README exists
+    if {[file exist $freadme] == 1 && [file isfile $freadme] == 1} {
+        # Read our README file
+        set fpp [open $freadme r]
+        set content [read $fpp]
 
-    set conList [split $content "\n"]
-    close $fp
+        send_user -- "$content\n"
 
-    if {"$arg1" == "name" || "$arg1" == "names"} {
-        # Print the table header
-        send_user -- "$table_header"
-        foreach con $conList {
-            set fields [split $con ":"]
-            lassign $fields call user pass server port
-            if {$port == ""} {
-                set port 22
-            }
-
-            # Calculate spaces between call and user@server
-            set spaces1 [expr 20 - [string length $call]]
-            set spaces1 [string repeat " " $spaces1]
-            # Calculate spaces from server to end
-            set spaces2 [expr 47 - [string length $server] - \
-                        [string length $user] - [string length $port] - 1]
-            set spaces2 [string repeat " " $spaces2]
-
-
-            # Print our table rows
-            send_user -- "| $call $spaces1 |   $user\@$server:$port $spaces2|\
-            $table_bottom"
-        }
-
-    } elseif {"$arg1" == "help"} {
-        set freadme "/usr/local/mssh/README"
-
-        if {[file exist $freadme] == 1 && [file isfile $freadme] == 1} {
-            # Read our README file
-            set fpp [open $freadme]
-            set content [read $fpp]
-
-            send_user -- "$content\n"
-
-            close $fpp
-        } else {
-            send_user -- "Sorry, but the README file is missing!\n"
-            send_user -- "Basic instructions is: mssh <callname>"
-        }
-
+        close $fpp
     } else {
-        # Make connection
-        foreach con $conList {
-            set fields [split $con ":"]
-            lassign $fields call user pass server port
-            if {$port == ""} {
-                set port 22
-            }
-            if {"$arg1" == $call} {
-                spawn ssh -p $port $user\@$server
-                expect "password:" { send -- "$pass\r" }
-                send_user -- "$conf_loggedin"
-                interact
-            }
-        }
-
+        send_user -- "Sorry, but the README file is missing!\n"
+        send_user -- "Basic instructions is found with: mssh help"
     }
 
 } else {
-    send_user -- "Please create 'conList' in /usr/local/mssh !\n"
-    send_user -- "Use the following format:\n"
-    send_user -- "callname1:username1:password1:server1:port1\n"
-    send_user -- "callname2:username2:password2:server2:port2\n"
+    # Our connection block
+    if { $_use } {
+        send_user -- "Using file '$use' instead of default!\n"
+        set fname $use
+    } else {
+        set fname "/usr/local/mssh/conList"
+    }
 
+    if {[file exist $fname] == 1 && [file isfile $fname] == 1} {
+        # Read our connection list file
+        set fp [open $fname r]
+        set content [read $fp]
+
+        set conList [split $content "\n"]
+        close $fp
+
+        if { $_connect } {
+            # See if our callname is defined
+            foreach con $conList {
+                set fields [split $con ":"]
+                lassign $fields call user pass server port
+                if {$port == ""} {
+                    set port 22
+                }
+                if {"$connect" == $call} {
+                    # Make the connection
+                    spawn ssh -p $port $user\@$server
+                    expect "password:" { send -- "$pass\r" }
+                    send_user -- "$conf_loggedin"
+                    interact
+                }
+            }
+        } elseif {"$arg1" == "names" || $get || $_del || $_set} {
+            # Print the table header
+            if {"$arg1" == "names" || $get} {
+                set alt_msg ""
+                set table_rows ""
+                foreach con $conList {
+                    set fields [split $con ":"]
+                    lassign $fields call user pass server port
+                    if {$port == ""} {
+                        set port 22
+                    }
+
+                    append table_rows [fmtable $call $user $server $port]
+                }
+            } elseif {$_set} {
+                set new_conList []
+                set nfields [split $set ":"]
+                lassign $nfields ncall nuser npass nserver nport
+                if {$nport == ""} {
+                    set nport 22
+                }
+                set row_not_found 1
+                foreach con $conList {
+                    set fields [split $con ":"]
+                    lassign $fields call user pass server port
+                    if {$port == ""} {
+                        set port 22
+                    }
+                    if {$ncall == $call} {
+                        set row_not_found 0
+                        append table_rows [fmtable $ncall $nuser $nserver $nport $ncall]
+                        lappend new_conList "$ncall:$nuser:$npass:$nserver:$nport"
+                    } else {
+                        append table_rows [fmtable $call $user $server $port]
+                        lappend new_conList "$call:$user:$pass:$server:$port"
+                    }
+                }
+                if {$row_not_found} {
+                    append table_rows [fmtable $ncall $nuser $nserver $nport $ncall]
+                    lappend new_conList "$ncall:$nuser:$npass:$nserver:$nport"
+                }
+                set new_conList [join $new_conList "\n"]
+                set fp [open $fname w+]
+                puts -nonewline $fp $new_conList
+                close $fp
+
+            } elseif {$_del} {
+                set table_rows ""
+                set new_conList []
+                foreach con $conList {
+                    set fields [split $con ":"]
+                    lassign $fields call user pass server port
+                    if {$port == ""} {
+                        set port 22
+                    }
+                    if {$del == $call} {
+                        send_user -- "\nRemoving connection:"
+                        send_user -- "$table_bottom"
+                        send_user -- [fmtable $call $user $server $port]
+                    } else {
+                        append table_rows [fmtable $call $user $server $port]
+                        lappend new_conList "$call:$user:$pass:$server:$port"
+                    }
+                }
+                set new_conList [join $new_conList "\n"]
+                set fp [open $fname w+]
+                puts -nonewline $fp $new_conList
+                close $fp
+            }
+
+            send_user -- "$table_header"
+            send_user -- "$table_rows\n"
+        }
+
+    } else {
+        if { $_use } {
+            send_user -- "Could not locate file '$use'\n"
+        } else {
+            set fp [open $fname w]
+            puts $fp " "
+            close $fp
+            send_user -- "File 'conList' has been created in /usr/local/mssh !\n"
+            send_user -- "Please fill it with your connection informartion "
+            send_user -- "using\nthe following format:\n"
+            send_user -- "callname1:username1:password1:server1:port1\n"
+            send_user -- "callname2:username2:password2:server2:port2\n"
+            send_user -- "\n"
+            send_user -- "And so on, or use:\n"
+            send_user -- " -s <callname> <username> <password> <server> <port>\n"
+        }
+
+    }
 }
