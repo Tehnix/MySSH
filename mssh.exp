@@ -118,7 +118,7 @@ if {$arg1 == "help" || $help || $helps || $arg1 == "" && $connect == "" &&
     send_user -- "\n"
     send_user -- "   -c <callname>\n"
     send_user -- "              Connect to server identified by <callname>\n"
-    send_user -- "   -s <callname> <username> <password> <server> <port>\n"
+    send_user -- "   -s \"callname:username:password:server:port\"\n"
     send_user -- "              Set a connection with specified args\n"
     send_user -- "   -d <callname>\n"
     send_user -- "              Delete the connection with <callname>\n"
@@ -270,7 +270,7 @@ if {$arg1 == "help" || $help || $helps || $arg1 == "" && $connect == "" &&
             send_user -- "callname2:username2:password2:server2:port2\n"
             send_user -- "\n"
             send_user -- "And so on, or use:\n"
-            send_user -- " -s <callname> <username> <password> <server> <port>\n"
+            send_user -- " -s \"callname:username:password:server:port\"\n"
         }
 
     }
