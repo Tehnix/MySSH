@@ -201,7 +201,7 @@ if {$arg1 == "help" || $help || $helps || $arg1 == "" && $_connect == 0 &&
         set fname [makeAbsolute "conList"]
     }
     # Check if file exists
-    if {[file exist $fname] == 1 && [file isfile $fname] == 1} {
+    if {[file exist $fname] != 1 && [file isfile $fname] != 1} {
         # Read our connection list file
         set fp [open $fname r]
         set content [read $fp]
@@ -330,17 +330,34 @@ if {$arg1 == "help" || $help || $helps || $arg1 == "" && $_connect == 0 &&
         if {$_use} {
             send_user -- "Could not locate file '$use'\n"
         } else {
-            set fp [open $fname w]
-            puts -nonewline $fp ""
-            close $fp
-            send_user -- "File 'conList' has been created in /usr/local/mssh !\n"
-            send_user -- "Please fill it with your connection informartion "
-            send_user -- "using\nthe following format:\n"
-            send_user -- "callname1:username1:password1:server1:port1\n"
-            send_user -- "callname2:username2:password2:server2:port2\n"
-            send_user -- "\n"
-            send_user -- "And so on, or use:\n"
-            send_user -- " -s \"callname:username:password:server:port\"\n"
+            stty -echo
+            send_user -- "Could not locate 'conList'\n"
+            send_user -- "Do you want to create file 'conList'? \[Y/n\]"
+            expect_user -re "(.*)\n"
+            stty echo
+            set answer $expect_out(1,string)
+            if {$answer == "Y" || $answer == "y" || $answer == "yes"
+                || $answer == "YES" || $answer == "Yes"} {
+                set fp [open $fname w]
+                puts -nonewline $fp ""
+                close $fp
+                send_user -- "\n\n"
+                send_user -- "File 'conList' has been created at:\n"
+                send_user -- "    $fname\n"
+                send_user -- "You can open the file with: mssh editcon"
+                send_user -- "Please fill it with your connection informartion "
+                send_user -- "using\nthe following format:\n"
+                send_user -- "callname1:username1:password1:server1:port1\n"
+                send_user -- "callname2:username2:password2:server2:port2\n"
+                send_user -- "And so on...\n"
+                send_user -- "Alternative: use,\n"
+                send_user -- "mssh -s \"callname:username:password:server:port\"\n\n"
+            } else {
+                send_user -- "\n\n"
+                send_user -- "mssh cannot proceed unless it has a conList file.\n"
+                send_user -- "Either create it, or use -u /path/to/alternative/file"
+                send_user -- "\nto use another file as connection list.\n\n"
+            }
         }
     }
 }
