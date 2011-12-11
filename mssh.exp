@@ -1,32 +1,40 @@
 #!/usr/bin/expect
 
-# Copyright &copy; 2009-2011, Christian Kjaer Laustsen (chrules)
-# All rights reserved.
-# 
-# Redistribution and use in source and binary forms, with or without           
-# modification, are permitted provided that the following #conditions are met:
-#
-# Redistributions of source code must retain the above copyright notice, this 
-# list of conditions and the following disclaimer.
-# 
-# Redistributions in binary form must reproduce the above copyright notice,   
-# this list of conditions and the following disclaimer in the documentation   
-# and/or other materials provided with the distribution.
-# Neither the name of the &lt;ORGANIZATION&gt; nor the names of its           
-# contributors may be used to endorse or promote products derived from this   
-# software without specific prior written permission.
-# 
-# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" 
-# AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE   
-# IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE  
-# ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE   
-# LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR         
-# CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF        
-# SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS    
-# INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN     
-# CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)     
-# ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE  
-# POSSIBILITY OF SUCH DAMAGE.
+#****************************************************************************#
+#                                                                            #
+# Copyright &copy; 2009-2011, Christian Kjaer Laustsen (chrules)             #
+# All rights reserved.                                                       #
+#                                                                            #
+# Redistribution and use in source and binary forms, with or without         #
+# modification, are permitted provided that the following #conditions are    #
+# met:                                                                       #
+#                                                                            #
+# Redistributions of source code must retain the above copyright notice,     #
+# this                                                                       #
+# list of conditions and the following disclaimer.                           #
+#                                                                            #
+# Redistributions in binary form must reproduce the above copyright notice,  #
+# this list of conditions and the following disclaimer in the documentation  #
+# and/or other materials provided with the distribution.                     #
+# Neither the name of the &lt;ORGANIZATION&gt; nor the names of its          #
+# contributors may be used to endorse or promote products derived from this  #
+# software without specific prior written permission.                        #
+#                                                                            #
+# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"#
+# AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE  #
+# IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE #
+# ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE  #
+# LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR        #
+# CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF       #
+# SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS   #
+# INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN    #
+# CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)    #
+# ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE #
+# POSSIBILITY OF SUCH DAMAGE.                                                #
+#                                                                            #
+#****************************************************************************#
+
+set VERSION "1.0.0"
 
 # Our pretty ascii vars :D
 set welcome_art "
@@ -57,7 +65,7 @@ set table_bottom "
 proc getopt {_argv name {_var ""} {default ""}} {
     upvar 1 $_argv argv $_var var
     set pos [lsearch -regexp $argv ^$name]
-    if {$pos>=0} {
+    if {$pos >= 0} {
         set to $pos
         if {$_var ne ""} {
             set var [lindex $argv [incr to]]
@@ -68,7 +76,8 @@ proc getopt {_argv name {_var ""} {default ""}} {
         if {[llength [info level 0]] == 5} {set var $default}
         return 0
     }
- }
+}
+# Pretty print a table
 proc fmtable {callname username server port {target ""}} {
     upvar table_bottom table_bottom
     # Calculate spaces between call and user@server
@@ -78,7 +87,6 @@ proc fmtable {callname username server port {target ""}} {
     set spaces2 [expr 40 - [string length $server] - \
                 [string length $username] - [string length $port] - 1]
     set spaces2 [string repeat " " $spaces2]
-
 
     # Print our table rows
     if {$target == $callname} {
@@ -91,9 +99,14 @@ proc fmtable {callname username server port {target ""}} {
     $table_bottom"
     }
 }
+# Create an absolute path from the given file/path
+proc makeAbsolute {pathname} {
+    file join [pwd] $pathname
+}
 
 # Get arguments from command line
 set _connect [getopt argv -c connect 0]
+set _temp [getopt argv -t temp 0]
 set _set [getopt argv -s set 0]
 set _del [getopt argv -d del 0]
 set _use [getopt argv -u use 0]
@@ -101,40 +114,70 @@ set get [getopt argv -g]
 set help [getopt argv -h]
 set helps [getopt argv --help]
 
+set version [getopt argv --version]
+set path [getopt argv --path]
+
 set arg1 [lindex $argv 0]
+set arg1 [lindex $argv 1]
 
 
-if {$arg1 == "help" || $help || $helps || $arg1 == "" && $connect == "" && 
-    $set == "" && $del == "" && $use == "" && $get == 0} {
+if {$arg1 == "help" || $help || $helps || $arg1 == "" && $_connect == 0 && 
+    $_set == 0 && $_del == 0 && $_use == 0 && $get == 0 && $path == 0 &&
+    $version == 0 && $_temp == 0} {
     send_user -- "$welcome_art"
-    send_user -- "usage: mssh \[--version\] \[--path\] \[--del=callname\]\n"
-    send_user -- "            \[--conn=callname\]\[--set\] \[--use=FILE\]\n"
-    send_user -- "            <command> \[<args>\]\n"
+    send_user -- "usage: mssh \[--version\] \[--path\] <command> \[<args>\]\n"
     send_user -- "\n"
     send_user -- "The most commonly used mssh commands are:\n"
-    send_user -- "   help       Display this list of helpful content\n"
-    send_user -- "   doc        Show documentation info (from README)\n"
-    send_user -- "   names      Show a list of registered connections\n"
+    send_user -- "   help     Display this list of helpful content\n"
+    send_user -- "   doc      Show documentation info (from README)\n"
+    send_user -- "   names    Show a list of registered connections\n"
+    send_user -- "   edit     Opens the mssh.exp file in vi (note that an "
+    send_user -- "alternative editor can be\n"
+    send_user -- "            specified using: mssh edit <editor>)\n"
+    send_user -- "   editcon  Opens the conList file in vi (note that an "
+    send_user -- "alternative editor can be\n"
+    send_user -- "            specified using: mssh editcon <editor>)\n"
     send_user -- "\n"
     send_user -- "   -c <callname>\n"
-    send_user -- "              Connect to server identified by <callname>\n"
+    send_user -- "            Connect to server identified by <callname>\n"
+    send_user -- "   -t \"callname:username:password:server:port\"\n"
+    send_user -- "            Make a connection with given parameters, but "
+    send_user -- "do not store it!\n"
     send_user -- "   -s \"callname:username:password:server:port\"\n"
-    send_user -- "              Set a connection with specified args\n"
+    send_user -- "            Set a connection with specified args\n"
     send_user -- "   -d <callname>\n"
     send_user -- "              Delete the connection with <callname>\n"
     send_user -- "   -u <filepath>\n"
-    send_user -- "              Use specified file instead of default conList\n"
-    send_user -- "   -g         Same as names, prints a list of connections\n"
+    send_user -- "            Use specified file instead of default conList\n"
+    send_user -- "   -g       Same as names, prints a list of connections\n"
     send_user -- "\n"
-} elseif {"$arg1" == "edit"} {
+} elseif {$arg1 == "edit"} {
     # TODO - auto exit when out of Vi
     send_user -- "$edit_file"
     spawn bash 
-    send "vi /usr/local/mssh/mssh.exp\r"
+    if {$arg2 != ""} {
+        send "$arg2 /usr/local/mssh/mssh.exp\r"
+    } else {
+        send "vi /usr/local/mssh/mssh.exp\r"
+    }
     interact
-
-} elseif {"$arg1" == "doc"} {
-    set freadme "/usr/local/mssh/README"
+} elseif {$arg1 == "editcon"} {
+    # TODO - auto exit when out of Vi
+    send_user -- "$edit_file"
+    spawn bash 
+    if {$arg2 != ""} {
+        send "$arg2 /usr/local/mssh/conList\r"
+    } else {
+        send "vi /usr/local/mssh/conList\r"
+    }
+    interact
+} elseif {$version} {
+    send_user -- "mssh - version: $VERSION\n\n"
+} elseif {$path} {
+    set filepath [makeAbsolute "mssh.exp"]
+    send_user -- "mssh - path: $filepath\n\n"
+} elseif {$arg1 == "doc"} {
+    set freadme [makeAbsolute "README"]
     # Check if README exists
     if {[file exist $freadme] == 1 && [file isfile $freadme] == 1} {
         # Read our README file
@@ -146,45 +189,58 @@ if {$arg1 == "help" || $help || $helps || $arg1 == "" && $connect == "" &&
         close $fpp
     } else {
         send_user -- "Sorry, but the README file is missing!\n"
-        send_user -- "Basic instructions is found with: mssh help"
+        send_user -- "Basic instructions is found with: mssh help or mssh -h"
     }
 
 } else {
     # Our connection block
-    if { $_use } {
-        send_user -- "Using file '$use' instead of default!\n"
-        set fname $use
+    if {$_use} {
+        send_user -- "NOTE Using file '$use' instead of default!\n"
+        set fname [makeAbsolute $use]
     } else {
-        set fname "/usr/local/mssh/conList"
+        set fname [makeAbsolute "conList"]
     }
-
+    # Check if file exists
     if {[file exist $fname] == 1 && [file isfile $fname] == 1} {
         # Read our connection list file
         set fp [open $fname r]
         set content [read $fp]
-
+        # Split the connections by newline character
         set conList [split $content "\n"]
         close $fp
 
-        if { $_connect } {
+        if {$_connect} {
             # See if our callname is defined
-            foreach con $conList {
-                set fields [split $con ":"]
+            if {$_temp} {
+                set fields [split $temp ":"]
                 lassign $fields call user pass server port
                 if {$port == ""} {
                     set port 22
                 }
-                if {"$connect" == $call} {
-                    # Make the connection
-                    spawn ssh -p $port $user\@$server
-                    expect "password:" { send -- "$pass\r" }
-                    send_user -- "$conf_loggedin"
-                    interact
+                # Spawn the ssh and make the connection
+                spawn ssh -p $port $user\@$server
+                expect "password:" { send -- "$pass\r" }
+                send_user -- "$conf_loggedin"
+                interact
+            } else {
+                foreach con $conList {
+                    set fields [split $con ":"]
+                    lassign $fields call user pass server port
+                    if {$port == ""} {
+                        set port 22
+                    }
+                    if {$connect == $call} {
+                        # Spawn the ssh and make the connection
+                        spawn ssh -p $port $user\@$server
+                        expect "password:" { send -- "$pass\r" }
+                        send_user -- "$conf_loggedin"
+                        interact
+                    }
                 }
             }
-        } elseif {"$arg1" == "names" || $get || $_del || $_set} {
-            # Print the table header
-            if {"$arg1" == "names" || $get} {
+        } elseif {$arg1 == "names" || $get || $_del || $_set} {
+            if {$arg1 == "names" || $get} {
+                # Pretty print a list of all stored connections
                 set alt_msg ""
                 set table_rows ""
                 foreach con $conList {
@@ -200,34 +256,44 @@ if {$arg1 == "help" || $help || $helps || $arg1 == "" && $connect == "" &&
                 set new_conList []
                 set nfields [split $set ":"]
                 lassign $nfields ncall nuser npass nserver nport
-                if {$nport == ""} {
-                    set nport 22
-                }
-                set row_not_found 1
-                foreach con $conList {
-                    set fields [split $con ":"]
-                    lassign $fields call user pass server port
-                    if {$port == ""} {
-                        set port 22
+                # Make sure we have the needed information
+                if {$ncall == "" $nuser == "" $nserver == ""} {
+                    send_user -- "Please use the following format\n"
+                    send_user -- "mssh -s callname:user:pass:server:port\n"
+                    send_user -- "NOTE if port is omitted, it defaults to 22\n"
+                } else {
+                    if {$nport == ""} {
+                        set nport 22
                     }
-                    if {$ncall == $call} {
-                        set row_not_found 0
+                    set row_not_found 1
+                    foreach con $conList {
+                        set fields [split $con ":"]
+                        lassign $fields call user pass server port
+                        if {$port == ""} {
+                            set port 22
+                        }
+                        # If the connection exists overwrite it, and keep the
+                        # current position
+                        if {$ncall == $call} {
+                            set row_not_found 0
+                            append table_rows [fmtable $ncall $nuser $nserver $nport $ncall]
+                            lappend new_conList "$ncall:$nuser:$npass:$nserver:$nport"
+                        } else {
+                            append table_rows [fmtable $call $user $server $port]
+                            lappend new_conList "$call:$user:$pass:$server:$port"
+                        }
+                    }
+                    # If the connection doesn't exist, append it to our
+                    # connection list
+                    if {$row_not_found} {
                         append table_rows [fmtable $ncall $nuser $nserver $nport $ncall]
                         lappend new_conList "$ncall:$nuser:$npass:$nserver:$nport"
-                    } else {
-                        append table_rows [fmtable $call $user $server $port]
-                        lappend new_conList "$call:$user:$pass:$server:$port"
                     }
+                    set new_conList [join $new_conList "\n"]
+                    set fp [open $fname w+]
+                    puts -nonewline $fp $new_conList
+                    close $fp
                 }
-                if {$row_not_found} {
-                    append table_rows [fmtable $ncall $nuser $nserver $nport $ncall]
-                    lappend new_conList "$ncall:$nuser:$npass:$nserver:$nport"
-                }
-                set new_conList [join $new_conList "\n"]
-                set fp [open $fname w+]
-                puts -nonewline $fp $new_conList
-                close $fp
-
             } elseif {$_del} {
                 set table_rows ""
                 set new_conList []
@@ -237,6 +303,8 @@ if {$arg1 == "help" || $help || $helps || $arg1 == "" && $connect == "" &&
                     if {$port == ""} {
                         set port 22
                     }
+                    # Omit appending the deleted connection to the rewrited 
+                    # conList file
                     if {$del == $call} {
                         send_user -- "\nRemoving connection:"
                         send_user -- "$table_bottom"
@@ -246,6 +314,7 @@ if {$arg1 == "help" || $help || $helps || $arg1 == "" && $connect == "" &&
                         lappend new_conList "$call:$user:$pass:$server:$port"
                     }
                 }
+                # Overwrite the conList file with the new changes
                 set new_conList [join $new_conList "\n"]
                 set fp [open $fname w+]
                 puts -nonewline $fp $new_conList
@@ -255,9 +324,10 @@ if {$arg1 == "help" || $help || $helps || $arg1 == "" && $connect == "" &&
             send_user -- "$table_header"
             send_user -- "$table_rows\n"
         }
-
     } else {
-        if { $_use } {
+        # Create the file if it doesn't exist, or notify the user that the
+        # file cannot be found (if using -u)
+        if {$_use} {
             send_user -- "Could not locate file '$use'\n"
         } else {
             set fp [open $fname w]
@@ -272,6 +342,5 @@ if {$arg1 == "help" || $help || $helps || $arg1 == "" && $connect == "" &&
             send_user -- "And so on, or use:\n"
             send_user -- " -s \"callname:username:password:server:port\"\n"
         }
-
     }
 }
