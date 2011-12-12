@@ -34,7 +34,7 @@
 #                                                                            #
 #****************************************************************************#
 
-set VERSION "1.0.3"
+set VERSION "1.0.4"
 
 # Our pretty ascii vars :D
 set welcome_art "
@@ -119,7 +119,7 @@ set version [getopt argv --version]
 set path [getopt argv --path]
 
 set arg1 [lindex $argv 0]
-set arg1 [lindex $argv 1]
+set arg2 [lindex $argv 1]
 
 
 if {$arg1 == "edit"} {
