@@ -34,7 +34,7 @@
 #                                                                            #
 #****************************************************************************#
 
-set VERSION "1.0.0"
+set VERSION "1.0.1"
 
 # Our pretty ascii vars :D
 set welcome_art "
@@ -103,6 +103,7 @@ proc fmtable {callname username server port {target ""}} {
 proc makeAbsolute {pathname} {
     file join [pwd] $pathname
 }
+set root /usr/local/mssh
 
 # Get arguments from command line
 set _connect [getopt argv -c connect 0]
@@ -156,9 +157,9 @@ if {$arg1 == "help" || $help || $helps || $arg1 == "" && $_connect == 0 &&
     send_user -- "$edit_file"
     spawn bash 
     if {$arg2 != ""} {
-        send "$arg2 /usr/local/mssh/mssh.exp\r"
+        send "$arg2 $root/mssh.exp\r"
     } else {
-        send "vi /usr/local/mssh/mssh.exp\r"
+        send "vi $root/mssh.exp\r"
     }
     interact
 } elseif {$arg1 == "editcon"} {
@@ -166,9 +167,9 @@ if {$arg1 == "help" || $help || $helps || $arg1 == "" && $_connect == 0 &&
     send_user -- "$edit_file"
     spawn bash 
     if {$arg2 != ""} {
-        send "$arg2 /usr/local/mssh/conList\r"
+        send "$arg2 $root/conList\r"
     } else {
-        send "vi /usr/local/mssh/conList\r"
+        send "vi $root/conList\r"
     }
     interact
 } elseif {$version} {
@@ -177,7 +178,7 @@ if {$arg1 == "help" || $help || $helps || $arg1 == "" && $_connect == 0 &&
     set filepath [makeAbsolute "mssh.exp"]
     send_user -- "mssh - path: $filepath\n\n"
 } elseif {$arg1 == "doc"} {
-    set freadme [makeAbsolute "README"]
+    set freadme [makeAbsolute "$root/README"]
     # Check if README exists
     if {[file exist $freadme] == 1 && [file isfile $freadme] == 1} {
         # Read our README file
@@ -198,7 +199,7 @@ if {$arg1 == "help" || $help || $helps || $arg1 == "" && $_connect == 0 &&
         send_user -- "NOTE Using file '$use' instead of default!\n"
         set fname [makeAbsolute $use]
     } else {
-        set fname [makeAbsolute "conList"]
+        set fname [makeAbsolute "$root/conList"]
     }
     # Check if file exists
     if {[file exist $fname] != 1 && [file isfile $fname] != 1} {
