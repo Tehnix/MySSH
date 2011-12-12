@@ -122,37 +122,7 @@ set arg1 [lindex $argv 0]
 set arg1 [lindex $argv 1]
 
 
-if {$arg1 == "help" || $help || $helps || $arg1 == "" && $_connect == 0 && 
-    $_set == 0 && $_del == 0 && $_use == 0 && $get == 0 && $path == 0 &&
-    $version == 0 && $_temp == 0} {
-    send_user -- "$welcome_art"
-    send_user -- "usage: mssh \[--version\] \[--path\] <command> \[<args>\]\n"
-    send_user -- "\n"
-    send_user -- "The most commonly used mssh commands are:\n"
-    send_user -- "   help     Display this list of helpful content\n"
-    send_user -- "   doc      Show documentation info (from README)\n"
-    send_user -- "   names    Show a list of registered connections\n"
-    send_user -- "   edit     Opens the mssh.exp file in vi (note that an "
-    send_user -- "alternative editor can be\n"
-    send_user -- "            specified using: mssh edit <editor>)\n"
-    send_user -- "   editcon  Opens the conList file in vi (note that an "
-    send_user -- "alternative editor can be\n"
-    send_user -- "            specified using: mssh editcon <editor>)\n"
-    send_user -- "\n"
-    send_user -- "   -c <callname>\n"
-    send_user -- "            Connect to server identified by <callname>\n"
-    send_user -- "   -t \"callname:username:password:server:port\"\n"
-    send_user -- "            Make a connection with given parameters, but "
-    send_user -- "do not store it!\n"
-    send_user -- "   -s \"callname:username:password:server:port\"\n"
-    send_user -- "            Set a connection with specified args\n"
-    send_user -- "   -d <callname>\n"
-    send_user -- "              Delete the connection with <callname>\n"
-    send_user -- "   -u <filepath>\n"
-    send_user -- "            Use specified file instead of default conList\n"
-    send_user -- "   -g       Same as names, prints a list of connections\n"
-    send_user -- "\n"
-} elseif {$arg1 == "edit"} {
+if {$arg1 == "edit"} {
     # TODO - auto exit when out of Vi
     send_user -- "$edit_file"
     spawn bash 
@@ -193,7 +163,7 @@ if {$arg1 == "help" || $help || $helps || $arg1 == "" && $_connect == 0 &&
         send_user -- "Basic instructions is found with: mssh help or mssh -h"
     }
 
-} else {
+} elseif {$_connect || $arg1 == "names" || $get || $_del || $_set} {
     # Our connection block
     if {$_use} {
         send_user -- "NOTE Using file '$use' instead of default!\n"
@@ -361,4 +331,32 @@ if {$arg1 == "help" || $help || $helps || $arg1 == "" && $_connect == 0 &&
             }
         }
     }
+} else {
+    send_user -- "$welcome_art"
+    send_user -- "usage: mssh \[--version\] \[--path\] <command> \[<args>\]\n"
+    send_user -- "\n"
+    send_user -- "The most commonly used mssh commands are:\n"
+    send_user -- "   help     Display this list of helpful content\n"
+    send_user -- "   doc      Show documentation info (from README)\n"
+    send_user -- "   names    Show a list of registered connections\n"
+    send_user -- "   edit     Opens the mssh.exp file in vi (note that an "
+    send_user -- "alternative editor can be\n"
+    send_user -- "            specified using: mssh edit <editor>)\n"
+    send_user -- "   editcon  Opens the conList file in vi (note that an "
+    send_user -- "alternative editor can be\n"
+    send_user -- "            specified using: mssh editcon <editor>)\n"
+    send_user -- "\n"
+    send_user -- "   -c <callname>\n"
+    send_user -- "            Connect to server identified by <callname>\n"
+    send_user -- "   -t \"callname:username:password:server:port\"\n"
+    send_user -- "            Make a connection with given parameters, but "
+    send_user -- "do not store it!\n"
+    send_user -- "   -s \"callname:username:password:server:port\"\n"
+    send_user -- "            Set a connection with specified args\n"
+    send_user -- "   -d <callname>\n"
+    send_user -- "              Delete the connection with <callname>\n"
+    send_user -- "   -u <filepath>\n"
+    send_user -- "            Use specified file instead of default conList\n"
+    send_user -- "   -g       Same as names, prints a list of connections\n"
+    send_user -- "\n"
 }
