@@ -34,7 +34,7 @@
 #                                                                            #
 #****************************************************************************#
 
-set VERSION "1.0.4"
+set VERSION "1.0.5"
 
 # Our pretty ascii vars :D
 set welcome_art "
@@ -228,7 +228,7 @@ if {$arg1 == "edit"} {
                 set nfields [split $set ":"]
                 lassign $nfields ncall nuser npass nserver nport
                 # Make sure we have the needed information
-                if {$ncall == "" $nuser == "" $nserver == ""} {
+                if {$ncall == "" || $nuser == "" || $nserver == ""} {
                     send_user -- "Please use the following format\n"
                     send_user -- "mssh -s callname:user:pass:server:port\n"
                     send_user -- "NOTE if port is omitted, it defaults to 22\n"
@@ -316,17 +316,20 @@ if {$arg1 == "edit"} {
                 send_user -- "File 'conList' has been created at:\n"
                 send_user -- "    $fname\n"
                 send_user -- "You can open the file with: mssh editcon"
-                send_user -- "Please fill it with your connection informartion "
-                send_user -- "using\nthe following format:\n"
+                send_user -- "Please fill it with your connection "
+                send_user -- "informartion using\nthe following format:\n"
                 send_user -- "callname1:username1:password1:server1:port1\n"
                 send_user -- "callname2:username2:password2:server2:port2\n"
                 send_user -- "And so on...\n"
                 send_user -- "Alternative: use,\n"
-                send_user -- "mssh -s \"callname:username:password:server:port\"\n\n"
+                send_user -- "mssh -s \"callname:username:password:server:\
+                port\"\n\n"
             } else {
                 send_user -- "\n\n"
-                send_user -- "mssh cannot proceed unless it has a conList file.\n"
-                send_user -- "Either create it, or use -u /path/to/alternative/file"
+                send_user -- "mssh cannot proceed unless it has a conList \
+                file.\n"
+                send_user -- "Either create it, or use -u \
+                /path/to/alternative/file"
                 send_user -- "\nto use another file as connection list.\n\n"
             }
         }
@@ -340,11 +343,11 @@ if {$arg1 == "edit"} {
     send_user -- "   doc      Show documentation info (from README)\n"
     send_user -- "   names    Show a list of registered connections\n"
     send_user -- "   edit     Opens the mssh.exp file in vi (note that an "
-    send_user -- "alternative editor can be\n"
-    send_user -- "            specified using: mssh edit <editor>)\n"
+    send_user -- "alternative editor can\n"
+    send_user -- "            be specified using: mssh edit <editor>)\n"
     send_user -- "   editcon  Opens the conList file in vi (note that an "
-    send_user -- "alternative editor can be\n"
-    send_user -- "            specified using: mssh editcon <editor>)\n"
+    send_user -- "alternative editor can \n"
+    send_user -- "            be specified using: mssh editcon <editor>)\n"
     send_user -- "\n"
     send_user -- "   -c <callname>\n"
     send_user -- "            Connect to server identified by <callname>\n"
