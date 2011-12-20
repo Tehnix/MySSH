@@ -34,7 +34,7 @@
 #                                                                            #
 #****************************************************************************#
 
-set VERSION "1.1.1"
+set VERSION "1.1.3"
 
 # Our pretty ascii vars :D
 set welcome_art "
@@ -189,6 +189,9 @@ if {$arg1 == "edit"} {
                 if {$port == ""} {
                     set port 22
                 }
+                if {$mate == ""} {
+                    set mate 52698
+                }
                 # Spawn the ssh and make the connection
                 if {$_mate} {
                     spawn ssh -R "$mate:localhost:$mate" -p $port $user\@$server
@@ -205,6 +208,10 @@ if {$arg1 == "edit"} {
                     if {$port == ""} {
                         set port 22
                     }
+                    if {$mate == ""} {
+                        set mate 52698
+                    }
+                    
                     if {$connect == $call} {
                         # Spawn the ssh and make the connection
                         if {$_mate} {
