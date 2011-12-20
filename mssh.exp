@@ -192,10 +192,8 @@ if {$arg1 == "edit"} {
                 # Spawn the ssh and make the connection
                 if {$_mate} {
                     spawn ssh -R "$mate:localhost:$mate" -p $port $user\@$server
-                    send_user -- "Using rmate\n"
                 } else {
                     spawn ssh -p $port $user\@$server
-                    send_user -- "NOT using rmate\n"
                 }
                 expect "password:" { send -- "$pass\r" }
                 send_user -- "$conf_loggedin"
@@ -209,7 +207,12 @@ if {$arg1 == "edit"} {
                     }
                     if {$connect == $call} {
                         # Spawn the ssh and make the connection
-                        spawn ssh -p $port $user\@$server
+                        if {$_mate} {
+                            spawn ssh -R "$mate:localhost:$mate" -p $port $user\@$server
+                        } else {
+                            spawn ssh -p $port $user\@$server
+                        }
+                        
                         expect "password:" { send -- "$pass\r" }
                         send_user -- "$conf_loggedin"
                         interact
