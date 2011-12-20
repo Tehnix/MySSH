@@ -34,7 +34,7 @@
 #                                                                            #
 #****************************************************************************#
 
-set VERSION "1.1.0"
+set VERSION "1.1.1"
 
 # Our pretty ascii vars :D
 set welcome_art "
@@ -111,7 +111,7 @@ set _temp [getopt argv -t temp 0]
 set _set [getopt argv -s set 0]
 set _del [getopt argv -d del 0]
 set _use [getopt argv -u use 0]
-set _mate [getopt argv -m mate 52698]
+set _mate [getopt argv -m mate 0]
 set get [getopt argv -g]
 set help [getopt argv -h]
 set helps [getopt argv --help]
@@ -191,10 +191,12 @@ if {$arg1 == "edit"} {
                 }
                 # Spawn the ssh and make the connection
                 if {$_mate} {
-                        spawn ssh -R "$mate:localhost:$mate" -p $port $user\@$server
-                    } else {
-                        spawn ssh -p $port $user\@$server
-                    }
+                    send_user -- "Using rmate\n"
+                    spawn ssh -R "$mate:localhost:$mate" -p $port $user\@$server
+                } else {
+                    send_user -- "NOT using rmate\n"
+                    spawn ssh -p $port $user\@$server
+                }
                 expect "password:" { send -- "$pass\r" }
                 send_user -- "$conf_loggedin"
                 interact
