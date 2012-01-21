@@ -64,26 +64,26 @@ If port is omitted, a standard of port 22 will be used.
 ####2x00 :                Usage
 Notice that mssh edit expects the file to be at `/usr/local/mssh/mssh.exp`, and opens in vi editor (most *NIX environments have this). This can easily be changed though in the file.
 
-<pre><code>usage: mssh [--version] [--path] <command> [<args>]
+<pre><code>usage: mssh [--version] [--path] &lt;command&gt; [&lt;args&gt;]
 
 The most commonly used mssh commands are:
    help     Display this list of helpful content
    doc      Show documentation info (from README)
    names    Show a list of registered connections
    edit     Opens the mssh.exp file in vi (note that an alternative editor can
-            be specified using: mssh edit <editor>)                           
+            be specified using: mssh edit &lt;editor&gt;)                           
    editcon  Opens the conList file in vi (note that an alternative editor can 
-            be specified using: mssh editcon <editor>)                        
+            be specified using: mssh editcon &lt;editor&gt;)                        
                                                                               
-   -c <callname>                                                              
-            Connect to server identified by <callname>                        
+   -c &lt;callname&gt;                                                              
+            Connect to server identified by &lt;callname&gt;                        
    -t "callname:username:password:server:port"                                
             Make a connection with given parameters, but do not store it!     
    -s "callname:username:password:server:port"                                
             Set a connection with specified args                              
-   -d <callname>                                                              
-              Delete the connection with <callname>                           
-   -u <filepath>                                                              
+   -d &lt;callname&gt;                                                              
+              Delete the connection with &lt;callname&gt;                           
+   -u &lt;filepath&gt;                                                              
             Use specified file instead of default conList                     
    -g       Same as names, prints a list of connections
    -p       Used with -g. Adds password to the printed data
