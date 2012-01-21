@@ -69,8 +69,7 @@ Notice that mssh edit expects the file to be at `/usr/local/mssh/mssh.exp`,
 and opens in vi editor (most *NIX environments have this).                    
 This can easily be changed though in the file.
 
-<code><pre>
-usage: mssh [--version] [--path] <command> [<args>]
+<pre><code>usage: mssh [--version] [--path] <command> [<args>]
 
 The most commonly used mssh commands are:
    help     Display this list of helpful content
@@ -92,5 +91,4 @@ The most commonly used mssh commands are:
    -u <filepath>                                                              
             Use specified file instead of default conList                     
    -g       Same as names, prints a list of connections                       
-                                                                              
-</pre></code>
+</code></pre>
