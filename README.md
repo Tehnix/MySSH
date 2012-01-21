@@ -4,10 +4,7 @@
 Christian Kjær Laustsen (Tehnix) from Zeal
 
 ####0x01 :                Introduction
-MySSH (mssh) is used as an easy way to connect to ssh servers.
-In a file named "conList", we specify: callname:username:password:server:port
-and then using expect we connect to the server, after connection,
-the control is given back to the user (the expect interact command).
+MySSH (mssh) is used as an easy way to connect to ssh servers. In a file named "conList", we specify: `callname:username:password:server:port` and then using expect we connect to the server, after connection, the control is given back to the user (the expect interact command).
 
 ####0x02 :                 License
 <pre>
@@ -65,9 +62,7 @@ If port is omitted, a standard of port 22 will be used.
 ##Usage
 
 ####2x00 :                Usage
-Notice that mssh edit expects the file to be at `/usr/local/mssh/mssh.exp`,
-and opens in vi editor (most *NIX environments have this).                    
-This can easily be changed though in the file.
+Notice that mssh edit expects the file to be at `/usr/local/mssh/mssh.exp`, and opens in vi editor (most *NIX environments have this). This can easily be changed though in the file.
 
 <pre><code>usage: mssh [--version] [--path] <command> [<args>]
 
