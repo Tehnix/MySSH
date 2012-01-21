@@ -422,6 +422,7 @@ if {$arg1 == "edit"} {
     send_user -- "   -u <filepath>\n"
     send_user -- "            Use specified file instead of default conList\n"
     send_user -- "   -g       Same as names, prints a list of connections\n"
+    send_user -- "   -p       Used with -g. Adds password to the printed data\n"
     send_user -- "   -m       Connect with rmate (default port is 52698)\n"
     send_user -- "\n"
 }

@@ -85,5 +85,7 @@ The most commonly used mssh commands are:
               Delete the connection with <callname>                           
    -u <filepath>                                                              
             Use specified file instead of default conList                     
-   -g       Same as names, prints a list of connections                       
+   -g       Same as names, prints a list of connections
+   -p       Used with -g. Adds password to the printed data
+   -m       Connect with rmate (default port is 52698)                    
 </code></pre>
