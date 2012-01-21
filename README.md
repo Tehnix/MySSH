@@ -3,7 +3,7 @@
 ####0x00 :                Author
 Christian Kjær Laustsen (Tehnix) from Zeal
 
-###0x01 :                Introduction
+####0x01 :                Introduction
 MySSH (mssh) is used as an easy way to connect to ssh servers.
 In a file named "conList", we specify: callname:username:password:server:port
 and then using expect we connect to the server, after connection,
@@ -27,7 +27,10 @@ the control is given back to the user (the expect interact command).
     this program; if not, write to the Free Software Foundation, Inc., 59 Temple 
     Place, Suite 330, Boston, MA 02111-1307 USA.
 </pre>          
-                                                                              
+
+- - -
+
+##Setup and files
 
 ####1x00 :                Setup
 Proposed setup is (in terminal):
@@ -57,8 +60,16 @@ Where `/from/file/location/mssh.exp` is where you saved the mssh.exp file
 Each field is seperated by `:` and each line is seperated by `\n`.
 If port is omitted, a standard of port 22 will be used.
 
+- - -
+
+##Usage
+
 ####2x00 :                Usage
-<pre><code>
+Notice that mssh edit expects the file to be at `/usr/local/mssh/mssh.exp`,
+and opens in vi editor (most *NIX environments have this).                    
+This can easily be changed though in the file.
+
+<code><pre>
 usage: mssh [--version] [--path] <command> [<args>]
 
 The most commonly used mssh commands are:
@@ -82,7 +93,4 @@ The most commonly used mssh commands are:
             Use specified file instead of default conList                     
    -g       Same as names, prints a list of connections                       
                                                                               
-</code></pre>
-Notice that mssh edit expects the file to be at `/usr/local/mssh/mssh.exp`,
-and opens in vi editor (most *NIX environments have this).                    
-This can easily be changed though in the file.
+</pre></code>
