@@ -187,10 +187,10 @@ if {$arg1 == "edit"} {
     set filepath [makeAbsolute "mssh.exp"]
     send_user -- "mssh - path: $filepath\n\n"
 } elseif {$arg1 == "doc"} {
-    set freadme [makeAbsolute "$root/README"]
-    # Check if README exists
+    set freadme [makeAbsolute "$root/README.md"]
+    # Check if README.md exists
     if {[file exist $freadme] == 1 && [file isfile $freadme] == 1} {
-        # Read our README file
+        # Read our README.md file
         set fpp [open $freadme r]
         set content [read $fpp]
 
@@ -198,7 +198,7 @@ if {$arg1 == "edit"} {
 
         close $fpp
     } else {
-        send_user -- "Sorry, but the README file is missing!\n"
+        send_user -- "Sorry, but the README.md file is missing!\n"
         send_user -- "Basic instructions is found with: mssh help or mssh -h"
     }
 
@@ -401,7 +401,7 @@ if {$arg1 == "edit"} {
     send_user -- "\n"
     send_user -- "The most commonly used mssh commands are:\n"
     send_user -- "   help     Display this list of helpful content\n"
-    send_user -- "   doc      Show documentation info (from README)\n"
+    send_user -- "   doc      Show documentation info (from README.md)\n"
     send_user -- "   names    Show a list of registered connections\n"
     send_user -- "   edit     Opens the mssh.exp file in vi (note that an "
     send_user -- "alternative editor can\n"
