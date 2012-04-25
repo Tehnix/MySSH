@@ -77,7 +77,9 @@ Notice that mssh edit expects the file to be at `/usr/local/mssh/mssh.exp`, and 
                 be specified using: mssh editcon &lt;editor&gt;)                        
                                                                               
        -c &lt;callname&gt;                                                              
-                Connect to server identified by &lt;callname&gt;                        
+                Connect to server identified by &lt;callname&gt;
+       -p &lt;callname&gt; 
+                Use before -c to proxy use the ssh as a proxy                        
        -t "callname:username:password:server:port"                                
                 Make a connection with given parameters, but do not store it!     
        -s "callname:username:password:server:port"                                
@@ -87,6 +89,6 @@ Notice that mssh edit expects the file to be at `/usr/local/mssh/mssh.exp`, and 
        -u &lt;filepath&gt;                                                              
                 Use specified file instead of default conList                     
        -g       Same as names, prints a list of connections
-       -p       Used with -g. Adds password to the printed data
+       -f       Used with -g. Adds password (full) to the printed data
        -m       Connect with rmate (default port is 52698)
 </code>

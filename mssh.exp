@@ -34,7 +34,8 @@
 #                                                                            #
 #****************************************************************************#
 
-set VERSION "1.2.1"
+set VERSION "1.3.0"
+set VERSION_TEXT "MySSH (mssh) $VERSION\n"
 
 # Our pretty ascii vars :D
 set welcome_art "
@@ -144,13 +145,14 @@ set root /usr/local/mssh
 
 # Get arguments from command line
 set _connect [getopt argv -c connect 0]
+set _proxy [getopt argv -p proxy 0]
 set _temp [getopt argv -t temp 0]
 set _set [getopt argv -s set 0]
 set _del [getopt argv -d del 0]
 set _use [getopt argv -u use 0]
 set _mate [getopt argv -m mate 0]
 set get [getopt argv -g]
-set passw [getopt argv -p]
+set full [getopt argv -f]
 set help [getopt argv -h]
 set helps [getopt argv --help]
 
@@ -182,7 +184,7 @@ if {$arg1 == "edit"} {
     }
     interact
 } elseif {$version} {
-    send_user -- "mssh - version: $VERSION\n\n"
+    send_user -- $VERSION_TEXT
 } elseif {$path} {
     set filepath [makeAbsolute "mssh.exp"]
     send_user -- "mssh - path: $filepath\n\n"
@@ -240,6 +242,40 @@ if {$arg1 == "edit"} {
                 send_user -- "$conf_loggedin"
                 interact
             } else {
+                if {$_proxy} {
+                    foreach con $conList {
+                        set fields [split $con ":"]
+                        lassign $fields call user pass server port
+                        if {$port == ""} {
+                            set port 22
+                        }
+                        if {$mate == ""} {
+                            set mate 52698
+                        }
+                    
+                        if {$proxy == $call} {
+                            # Spawn the ssh and make the connection
+                            if {$_mate} {
+                                spawn ssh -R "$mate:localhost:$mate" -p $port -l $user $server
+                            } else {
+                                spawn ssh -p $port -l $user $server
+                            }
+                        
+                            expect {
+                                "password:" { 
+                                    send -- "$pass\r"
+                                }
+                                "#" { 
+                                    send_user -- "$conf_loggedin"
+                                }
+                                "Are you sure you want to continue connecting (yes/no)?" {
+                                    send_user -- "yes"
+                                    exp_continue
+                                }
+                            }
+                        }
+                    }
+                }
                 foreach con $conList {
                     set fields [split $con ":"]
                     lassign $fields call user pass server port
@@ -252,14 +288,22 @@ if {$arg1 == "edit"} {
                     
                     if {$connect == $call} {
                         # Spawn the ssh and make the connection
-                        if {$_mate} {
-                            spawn ssh -R "$mate:localhost:$mate" -p $port $user\@$server
+                        if {$_proxy} {
+                            if {$_mate} {
+                                send -- "ssh -R $mate:localhost:$mate -p $port -l $user $server\r"
+                            } else {
+                                send -- "ssh -p $port -l $user $server\r"
+                            }
                         } else {
-                            spawn ssh -p $port $user\@$server
+                            if {$_mate} {
+                                spawn ssh -R "$mate:localhost:$mate" -p $port -l $user $server
+                            } else {
+                                spawn ssh -p $port -l $user $server
+                            }
                         }
                         
+                        # TODO take into account the "Are you sure you want to continue connecting (yes/no)?"
                         expect "password:" { send -- "$pass\r" }
-                        send_user -- "$conf_loggedin"
                         interact
                     }
                 }
@@ -275,7 +319,7 @@ if {$arg1 == "edit"} {
                     if {$port == ""} {
                         set port 22
                     }
-                    if {$passw} {
+                    if {$full} {
                         append table_rows [fmtable_pass $call $user $pass $server $port]
                     } else {
                         append table_rows [fmtable $call $user $server $port]
@@ -349,7 +393,7 @@ if {$arg1 == "edit"} {
                 puts -nonewline $fp $new_conList
                 close $fp
             }
-            if {$passw && $get} {
+            if {$full && $get} {
                 send_user -- "$table_header_pass"
             } else {
                 send_user -- "$table_header"
@@ -412,6 +456,8 @@ if {$arg1 == "edit"} {
     send_user -- "\n"
     send_user -- "   -c <callname>\n"
     send_user -- "            Connect to server identified by <callname>\n"
+    send_user -- "   -p <callname>\n"
+    send_user -- "            Use before -c to proxy use the ssh as a proxy\n"
     send_user -- "   -t \"callname:username:password:server:port\"\n"
     send_user -- "            Make a connection with given parameters, but "
     send_user -- "do not store it!\n"
