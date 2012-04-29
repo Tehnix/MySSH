@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset='utf-8'>
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+
+    <link rel="stylesheet" type="text/css" href="stylesheets/stylesheet.css" media="screen" />
+    <link rel="stylesheet" type="text/css" href="stylesheets/pygment_trac.css" media="screen" />
+    <link rel="stylesheet" type="text/css" href="stylesheets/print.css" media="print" />
+
+    <title>MySSH by Tehnix</title>
+  </head>
+
+  <body>
+
+    <header>
+      <div class="container">
+        <h1>MySSH</h1>
+        <h2>MySSH (mssh) - An automated ssh login script in Expect (Tcl)</h2>
+
+        <section id="downloads">
+          <a href="https://github.com/Tehnix/MySSH/zipball/master" class="btn">Download as .zip</a>
+          <a href="https://github.com/Tehnix/MySSH/tarball/master" class="btn">Download as .tar.gz</a>
+          <a href="https://github.com/Tehnix/MySSH" class="btn btn-github"><span class="icon"></span>View on GitHub</a>
+        </section>
+      </div>
+    </header>
+
+    <div class="container">
+      <section id="main_content">
+        <h2>MySSH (mssh) - An automated ssh login script in Expect (Tcl)</h2>
+
+<h4>0x00 :                Author</h4>
+
+<p>Christian Kjær Laustsen (Tehnix) from Zeal</p>
+
+<h4>0x01 :                Introduction</h4>
+
+<p>MySSH (mssh) is used as an easy way to connect to ssh servers. In a file named "conList", we specify: <code>callname:username:password:server:port</code> and then using expect we connect to the server, after connection, the control is given back to the user (the expect interact command).</p>
+
+<h4>0x02 :                 License</h4>
+
+<p><code>
+    Copyright (c) 2012, Christian Kjær Laustsen
+    All rights reserved.</code></p>
+
+<pre><code>Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are met:
+    * Redistributions of source code must retain the above copyright
+      notice, this list of conditions and the following disclaimer.
+    * Redistributions in binary form must reproduce the above copyright
+      notice, this list of conditions and the following disclaimer in the
+      documentation and/or other materials provided with the distribution.
+    * Neither the name of the &lt;organization&gt; nor the
+      names of its contributors may be used to endorse or promote products
+      derived from this software without specific prior written permission.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+DISCLAIMED. IN NO EVENT SHALL &lt;COPYRIGHT HOLDER&gt; BE LIABLE FOR ANY
+DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+(INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+</code></pre>
+
+<p></p>
+
+<hr><h2>Setup and files</h2>
+
+<h4>1x00 :                Setup</h4>
+
+<p>Proposed setup is (in terminal):
+<code>
+    1. git clone <a href="mailto:git@github.com">git@github.com</a>:chrules/MySSH.git /usr/local/mssh<br>
+    2. chmod 755 /usr/local/mssh/mssh.exp<br>
+    3. echo "alias mssh=\"expect /usr/local/mssh/mssh.exp\"" &gt;&gt; ~/.bash_login
+</code>
+The script can now be launched from terminal with mssh.</p>
+
+<p>Use: <code>mssh -s callname:username:password:server:port1</code> to set your first connection.                                                 </p>
+
+<h4>1x01 :                Manual Download</h4>
+
+<p>If you manually downloaded the file, swap step 1 with this:
+<code>
+    1.1 mkdir /usr/local/mssh<br>
+    1.2 mv /from/file/location/mssh.exp /usr/local/mssh/mssh.exp
+</code>
+Where <code>/from/file/location/mssh.exp</code> is where you saved the mssh.exp file</p>
+
+<h4>1x02 :                Formatting of conList file</h4>
+
+<p><code>
+    callname1:username1:password1:server1:port1<br>
+    callname2:username2:password2:server2<br>
+    callname3:username3:password3:server3:port3
+</code><br>
+Each field is seperated by <code>:</code> and each line is seperated by <code>\n</code>.
+If port is omitted, a standard of port 22 will be used.</p>
+
+<hr><h2>Usage</h2>
+
+<h4>2x00 :                Usage</h4>
+
+<p>Notice that mssh edit expects the file to be at <code>/usr/local/mssh/mssh.exp</code>, and opens in vi editor (most *NIX environments have this). This can easily be changed though in the file.</p>
+
+<p><code>
+    usage: mssh [--version] [--path] &lt;command&gt; [&lt;args&gt;]</code></p>
+
+<pre><code>The most commonly used mssh commands are:
+   help     Display this list of helpful content
+   doc      Show documentation info (from README)
+   names    Show a list of registered connections
+   edit     Opens the mssh.exp file in vi (note that an alternative editor can
+            be specified using: mssh edit &amp;lt;editor&amp;gt;)                           
+   editcon  Opens the conList file in vi (note that an alternative editor can 
+            be specified using: mssh editcon &amp;lt;editor&amp;gt;)                        
+
+   -c &amp;lt;callname&amp;gt;                                                              
+            Connect to server identified by &amp;lt;callname&amp;gt;
+   -p &amp;lt;callname&amp;gt; 
+            Use before -c to proxy use the ssh as a proxy                        
+   -t "callname:username:password:server:port"                                
+            Make a connection with given parameters, but do not store it!     
+   -s "callname:username:password:server:port"                                
+            Set a connection with specified args                              
+   -d &amp;lt;callname&amp;gt;                                                              
+              Delete the connection with &amp;lt;callname&amp;gt;                           
+   -u &amp;lt;filepath&amp;gt;                                                              
+            Use specified file instead of default conList                     
+   -g       Same as names, prints a list of connections
+   -f       Used with -g. Adds password (full) to the printed data
+   -m       Connect with rmate (default port is 52698)
+</code></pre>
+
+<p></p>
+      </section>
+    </div>
+
+    
+  </body>
+</html>
